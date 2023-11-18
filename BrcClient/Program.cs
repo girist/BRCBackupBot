@@ -12,10 +12,11 @@ Console.WriteLine("***************************");
 int i = 1;
 //string time = GetInfo()[0].ToString();
 string Ip = GetInfo()[1].ToString();
+string kaynak = GetInfo()[2].ToString();
 
 while (i > 0)
 {
-    if (DateTime.Now.ToString("HH:mm:ss") == "23:33:00")
+    if (DateTime.Now.ToString("HH:mm:ss") == "23:47:00")
     {
         if (!IsConnectedToInternet()) { InternetConnection("renew"); }
         Thread.Sleep(10000);
@@ -40,7 +41,7 @@ static bool IsConnectedToInternet()
 #region Client
 async Task<int> ClientRun(string ip)
 {
-    string[] dosyalar = Directory.GetFiles(@"C:\Users\ChiLL\OneDrive\Masaüstü\kaynak");
+    string[] dosyalar = Directory.GetFiles(@$"{kaynak}");
     try
     {
         foreach (var dosya in dosyalar)

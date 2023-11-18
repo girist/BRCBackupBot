@@ -1,7 +1,9 @@
-﻿using System.Net;
+﻿using System.Collections;
+using System.Net;
 using System.Net.Sockets;
 
 Console.WriteLine("Server is Active!");
+string hedef = GetInfo()[0].ToString();
 
 TcpListener tcpListener = new TcpListener(IPAddress.Any, 1234);
 tcpListener.Start();
@@ -44,7 +46,7 @@ while (true)
         {
             FileInfo fi = new FileInfo(cmdFileName);
             fStream.Read(buffer, 0, buffer.Length);
-            File.WriteAllBytes(@"C:\Users\ChiLL\OneDrive\Masaüstü\hedef" + "\\" + fi.Name, buffer);
+            File.WriteAllBytes(@$"{hedef}" + "\\" + fi.Name, buffer);
             fStream.Flush();
             fStream.Close();
         }
@@ -55,3 +57,19 @@ while (true)
         Console.WriteLine(ex.Message.ToString());
     }
 }
+
+#region TxtInfo
+ArrayList GetInfo()
+{
+    var arr = new ArrayList();
+    using (StreamReader sr = new StreamReader("benioku.txt"))
+    {
+        string satir;
+        while ((satir = sr.ReadLine()) != null)
+        {
+            arr.Add(satir);
+        }
+    }
+    return arr;
+}
+#endregion
