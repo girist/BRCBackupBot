@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
 Console.WriteLine("Server is Active!");
@@ -37,14 +36,15 @@ while (true)
             {
                 size = remaining;
             }
-
             read = tcpClient.GetStream().Read(buffer, received, size);
             received += read;
         }
+
         using (FileStream fStream = new FileStream(Path.GetFileName(cmdFileName), FileMode.Create))
         {
-            Console.WriteLine(cmdFileName);
-            fStream.Write(buffer, 0, buffer.Length);
+            FileInfo fi = new FileInfo(cmdFileName);
+            fStream.Read(buffer, 0, buffer.Length);
+            File.WriteAllBytes(@"C:\Users\ChiLL\OneDrive\Masaüstü\hedef" + "\\" + fi.Name, buffer);
             fStream.Flush();
             fStream.Close();
         }

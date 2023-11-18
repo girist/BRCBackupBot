@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -7,21 +6,22 @@ using System.Runtime.InteropServices;
 
 #region Main
 Console.WriteLine("Client is Active!");
+Console.WriteLine("***************************");
+
+
 int i = 1;
-string time = GetInfo()[0].ToString();
+//string time = GetInfo()[0].ToString();
 string Ip = GetInfo()[1].ToString();
 
 while (i > 0)
 {
-    if (DateTime.Now.ToString("HH:mm:ss") == time)
+    if (DateTime.Now.ToString("HH:mm:ss") == "23:33:00")
     {
         if (!IsConnectedToInternet()) { InternetConnection("renew"); }
         Thread.Sleep(10000);
         i = await ClientRun(Ip);
         Thread.Sleep(10000);
         if (IsConnectedToInternet()) { InternetConnection("release"); }
-        Console.WriteLine($"Connection Status :{IsConnectedToInternet()}");
-
     }
     i = 1;
 } 
@@ -76,19 +76,21 @@ void InternetConnection(string str)
         Arguments = "/C ipconfig /" + str
     };
     Process.Start(internet);
-} 
+}
 #endregion
 
+#region TxtInfo
 ArrayList GetInfo()
 {
     var arr = new ArrayList();
-    using (StreamReader sr = new StreamReader("benioku.txt")) //StreamReader fonksiyonu ile okunacak dosyamızı açtırıyoruz.
+    using (StreamReader sr = new StreamReader("benioku.txt"))
     {
-        string satir; //burada okuduğunuz her satırı atamamız için gerekli değişkeni tanımlıyoruz.
-        while ((satir = sr.ReadLine()) != null) //Döngü kurup eğer satır boş değilse, satirlarList List'ine ekleme yapıyoruz.
+        string satir;
+        while ((satir = sr.ReadLine()) != null)
         {
             arr.Add(satir);
         }
     }
     return arr;
-}
+} 
+#endregion
