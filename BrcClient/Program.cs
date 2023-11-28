@@ -3,29 +3,36 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
-
 #region Main
 Console.WriteLine("Client is Active!");
-Console.WriteLine("***************************");
-
+Console.WriteLine("***************************************************");
 
 int i = 1;
-//string time = GetInfo()[0].ToString();
+string time = GetInfo()[0].ToString();
 string Ip = GetInfo()[1].ToString();
 string kaynak = GetInfo()[2].ToString();
 
+
+
 while (i > 0)
 {
-    if (DateTime.Now.ToString("HH:mm:ss") == "23:47:00")
+    if (IsConnectedToInternet()) { InternetConnection("release"); }
+
+    if (DateTime.Now.ToString("HH:mm:ss") == time)
     {
-        if (!IsConnectedToInternet()) { InternetConnection("renew"); }
-        Thread.Sleep(10000);
-        i = await ClientRun(Ip);
-        Thread.Sleep(10000);
-        if (IsConnectedToInternet()) { InternetConnection("release"); }
+        if (!IsConnectedToInternet())
+        {
+            InternetConnection("renew");
+            i = await ClientRun(Ip);
+            InternetConnection("release");
+        }
+        else
+        {
+            InternetConnection("release");
+        }
     }
     i = 1;
-} 
+}
 #endregion
 
 #region IPControl
@@ -52,31 +59,46 @@ async Task<int> ClientRun(string ip)
             StreamWriter sWriter = new StreamWriter(tcpClient.GetStream());
             byte[] bytes = await System.IO.File.ReadAllBytesAsync(dosya);
 
-            await sWriter.WriteLineAsync(bytes.Length.ToString());
-            sWriter.Flush();
-
             await sWriter.WriteLineAsync(dosya);
             sWriter.Flush();
 
+            FileInfo fi = new FileInfo(dosya);
+
             Console.WriteLine($"Sending file is {dosya}");
             await tcpClient.Client.SendFileAsync(dosya);
+
+            Thread.Sleep(1000);
         }
     }
     catch (Exception e) { Console.Write(e.Message); }
     Console.WriteLine("Is Completed!");
     return 0;
-} 
+}
 #endregion
 
 #region IP_Open_or_Close
 void InternetConnection(string str)
 {
-    ProcessStartInfo internet = new ProcessStartInfo()
+
+    Process p = new Process();
+    p.StartInfo.UseShellExecute = false;
+    p.StartInfo.RedirectStandardOutput = true;
+    p.StartInfo.FileName = "cmd.exe";
+    p.StartInfo.Arguments = "/C ipconfig /" + str;
+    p.Start();
+
+    if (str == "release")
     {
-        FileName = "cmd.exe",
-        Arguments = "/C ipconfig /" + str
-    };
-    Process.Start(internet);
+        Console.BackgroundColor = ConsoleColor.Red;
+        Console.WriteLine($"Connection is Closed");
+    }
+    else
+    {
+        Console.BackgroundColor = ConsoleColor.DarkBlue;
+        Console.WriteLine($"Connection is Opened");
+    }
+    Console.BackgroundColor = ConsoleColor.Black;
+    Thread.Sleep(10000);
 }
 #endregion
 
@@ -93,5 +115,5 @@ ArrayList GetInfo()
         }
     }
     return arr;
-} 
+}
 #endregion

@@ -10,53 +10,38 @@ tcpListener.Start();
 
 Console.WriteLine("Server started");
 
+
 while (true)
+{
+    Receive();
+}
+
+#region Receive
+async void Receive()
 {
     try
     {
-        Console.WriteLine("***************************");
         TcpClient tcpClient = tcpListener.AcceptTcpClient();
 
         Console.WriteLine("Connected to client");
+        Console.WriteLine("**********************************************");
 
         StreamReader reader = new StreamReader(tcpClient.GetStream());
-        string cmdFileSize = reader.ReadLine();
-        string cmdFileName = reader.ReadLine();
-        Console.WriteLine(cmdFileName);
+        string fileName = reader.ReadLine();
+        FileInfo fileInfo = new FileInfo(fileName);
 
-        int length = Convert.ToInt32(cmdFileSize);
-        byte[] buffer = new byte[length];
-        int received = 0;
-        int read = 0;
-        int size = 1024;
-        int remaining = 0;
-        
-        while (received < length)
-        {
-            remaining = length - received;
-            if (remaining < size)
-            {
-                size = remaining;
-            }
-            read = tcpClient.GetStream().Read(buffer, received, size);
-            received += read;
-        }
+        byte[] imgbyte =await File.ReadAllBytesAsync(fileName);
 
-        using (FileStream fStream = new FileStream(Path.GetFileName(cmdFileName), FileMode.Create))
-        {
-            FileInfo fi = new FileInfo(cmdFileName);
-            fStream.Read(buffer, 0, buffer.Length);
-            File.WriteAllBytes(@$"{hedef}" + "\\" + fi.Name, buffer);
-            fStream.Flush();
-            fStream.Close();
-        }
-        Console.WriteLine("File received and saved in " + Environment.CurrentDirectory);
+        File.WriteAllBytes($"{hedef}" + $@"\{fileInfo.Name}", imgbyte);
+        Console.WriteLine($"{fileInfo.Name}");
     }
     catch (Exception ex)
     {
         Console.WriteLine(ex.Message.ToString());
     }
+    await Console.Out.WriteLineAsync(DateTime.Now.ToString());
 }
+#endregion
 
 #region TxtInfo
 ArrayList GetInfo()
